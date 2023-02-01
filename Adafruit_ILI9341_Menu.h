@@ -2,7 +2,7 @@
   The MIT License (MIT)
 
   library writen by Kris Kasprzak
-  
+
   Permission is hereby granted, free of charge, to any person obtaining a copy of
   this software and associated documentation files (the "Software"), to deal in
   the Software without restriction, including without limitation the rights to
@@ -18,7 +18,7 @@
   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-  On a personal note, if you develop an application or product using this library 
+  On a personal note, if you develop an application or product using this library
   and make millions of dollars, I'm happy for you!
 
 	rev		date			author				change
@@ -31,62 +31,59 @@
 
 */
 
-
-#include "Adafruit_GFX.h"
-#include "Adafruit_ILI9341.h"
-
-
-#ifndef ADAFRUITILI9341_MENU_H
-#define ADAFRUITILI9341_MENU_H
+#ifndef TFT_ESPI_ILI9341_MENU_H
+#define TFT_ESPI_ILI9341_MENU_H
 
 #if ARDUINO >= 100
-	 #include "Arduino.h"
-	 #include "Print.h"
+#include "Arduino.h"
+#include "Print.h"
 #else
-	
+
 #endif
 
 #ifdef __cplusplus
-	
+
 #endif
 
-#define MAX_OPT 15				// max elements in a menu, increase as needed
-#define MAX_CHAR_LEN 30			// max chars in menus, increase as needed
+#include <TFT_eSPI.h>
+
+#define MAX_OPT 20		// max elements in a menu, increase as needed
+#define MAX_CHAR_LEN 40 // max chars in menus, increase as needed
 #define TRIANGLE_H 3.7
 #define TRIANGLE_W 2.5
-#define MENU_C_DKGREY 0x4A49	// used for disable color, method to change
-#define EXIT_TEXT "Exit"		// default text for menu exit text, change here or use a method
+#define MENU_C_DKGREY 0x4A49 // used for disable color, method to change
+#define EXIT_TEXT "Exit"	 // default text for menu exit text, change here or use a method
 
 #define ICON_NONE 0
 #define ICON_MONO 1
-#define ICON_565  2
+#define ICON_565 2
 
-#define  BUTTON_PRESSED 1
-#define  BUTTON_NOTPRESSED 0
+#define BUTTON_PRESSED 1
+#define BUTTON_NOTPRESSED 0
 
-class  EditMenu {
-		
+class EditMenu
+{
+
 public:
+	EditMenu(TFT_eSPI *Display, bool EnableTouch = false);
 
-	EditMenu(Adafruit_ILI9341 *Display,bool EnableTouch = false);
+	void init(uint16_t TextColor, uint16_t BackgroundColor,
+			  uint16_t HighlightTextColor, uint16_t HighlightColor,
+			  uint16_t SelectedTextColor, uint16_t SelectedColor,
+			  uint16_t MenuColumn, uint16_t ItemRowHeight, uint16_t MaxRow,
+			  const char *TitleText, const GFXfont &ItemFont, const GFXfont &TitleFont);
 
-	void init(uint16_t TextColor, uint16_t BackgroundColor, 
-		uint16_t HighlightTextColor, uint16_t HighlightColor,
-		uint16_t SelectedTextColor, uint16_t SelectedColor,
-		uint16_t MenuColumn, uint16_t ItemRowHeight,uint16_t MaxRow,
-		const char *TitleText, const GFXfont &ItemFont, const GFXfont &TitleFont);
+	int addNI(const char *ItemText, float Data, float LowLimit, float HighLimit,
+			  float Increment, byte DecimalPlaces = 0, const char **ItemMenuText = NULL);
 
-	int addNI(const char *ItemText, float Data, float LowLimit, float HighLimit, 
-		float Increment, byte DecimalPlaces = 0, const char **ItemMenuText = NULL);
+	int addMono(const char *ItemText, float Data, float LowLimit, float HighLimit,
+				float Increment, byte DecimalPlaces = 0, const char **ItemMenuText = NULL,
+				const unsigned char *Bitmap = nullptr, uint8_t BitmapWidth = 0, uint8_t BitmapHeight = 0);
 
-	int addMono(const char *ItemText, float Data, float LowLimit, float HighLimit, 
-		float Increment, byte DecimalPlaces = 0,const char **ItemMenuText = NULL, 
-		const unsigned char *Bitmap = nullptr, uint8_t BitmapWidth = 0, uint8_t BitmapHeight = 0);
+	int add565(const char *ItemText, float Data, float LowLimit, float HighLimit,
+			   float Increment, byte DecimalPlaces = 0, const char **ItemMenuText = NULL,
+			   const uint16_t *Bitmap = nullptr, uint8_t BitmapWidth = 0, uint8_t BitmapHeight = 0);
 
-	int add565(const char *ItemText, float Data, float LowLimit, float HighLimit, 
-		float Increment, byte DecimalPlaces = 0, const char **ItemMenuText = NULL, 
-		const uint16_t *Bitmap = nullptr, uint8_t BitmapWidth = 0, uint8_t BitmapHeight = 0);
-	
 	int selectRow();
 
 	void draw();
@@ -99,15 +96,15 @@ public:
 
 	void setTitleBarSize(uint16_t TitleTop, uint16_t TitleLeft, uint16_t TitleWith, uint16_t TitleHeight);
 
-	void setTitleText( char *TitleText,  char *ExitText);
+	void setTitleText(char *TitleText, char *ExitText);
 
 	void setTitleTextMargins(uint16_t LeftMargin, uint16_t TopMargin);
 
 	void setIncrementDelay(uint16_t Delay);
-	
+
 	void setMenuBarMargins(uint16_t LeftMargin, uint16_t Width, uint16_t BorderRadius, uint16_t BorderThickness);
 
-	void setItemColors( uint16_t DisableTextColor, uint16_t BorderColor, uint16_t EditModeBorderColor = 0);
+	void setItemColors(uint16_t DisableTextColor, uint16_t BorderColor, uint16_t EditModeBorderColor = 0);
 
 	void setItemTextMargins(uint16_t LeftMargin, uint16_t TopMargin, uint16_t MenuMargin);
 
@@ -115,29 +112,28 @@ public:
 
 	void setIconMargins(uint16_t LeftMargin, uint16_t TopMargin);
 
-	void SetItemValue(int ItemID, float ItemValue);
+	void setItemValue(int ItemID, float ItemValue);
 
-	void SetAllColors(uint16_t TextColor, uint16_t BackgroundColor, 
-							uint16_t HighlightTextColor, uint16_t HighlightColor, uint16_t HighlightBorderColor,
-							uint16_t SelectedTextColor, uint16_t SelectedColor, uint16_t SelectBorderColor,
-							uint16_t DisableTextColor ,	uint16_t TitleTextColor, uint16_t TitleFillColor);
+	void setAllColors(uint16_t TextColor, uint16_t BackgroundColor,
+					  uint16_t HighlightTextColor, uint16_t HighlightColor, uint16_t HighlightBorderColor,
+					  uint16_t SelectedTextColor, uint16_t SelectedColor, uint16_t SelectBorderColor,
+					  uint16_t DisableTextColor, uint16_t TitleTextColor, uint16_t TitleFillColor);
 
 	void disable(int ID);
 
 	void enable(int ID);
 
 	bool getEnableState(int ID);
-	
+
 	int press(int16_t ScreenX, int16_t ScreenY);
 
 	void drawRow(int ID);
-		
+
 	float value[MAX_OPT];
 
 	int item;
 
 private:
-
 	void drawHeader(bool hl, uint8_t Style);
 
 	void up();
@@ -145,7 +141,7 @@ private:
 	void down();
 
 	void incrementUp();
-	
+
 	void incrementDown();
 
 	void drawItems();
@@ -153,17 +149,17 @@ private:
 	void drawMonoBitmap(int16_t x, int16_t y, const unsigned char *bitmap, uint8_t w, uint8_t h, uint16_t color);
 
 	void draw565Bitmap(int16_t x, int16_t y, const uint16_t *bitmap, uint8_t w, uint8_t h);
-	
-	Adafruit_ILI9341 *d;
+
+	TFT_eSPI *d;
 	char itemlabel[MAX_OPT][MAX_CHAR_LEN];
 	char ttx[MAX_CHAR_LEN];
-	char etx[MAX_CHAR_LEN]; 
+	char etx[MAX_CHAR_LEN];
 	GFXfont itemf;
 	GFXfont titlef;
-	uint16_t itc, ibc, ihtc, ihbc, istc, isbc;	// item variables
-	uint16_t tbl, tbt, tbw, tbh, ttc, tfc, tox, toy;	// title variables
+	uint16_t itc, ibc, ihtc, ihbc, istc, isbc;		 // item variables
+	uint16_t tbl, tbt, tbw, tbh, ttc, tfc, tox, toy; // title variables
 	// margins
-	uint16_t imr, isx, itx, isy, irh, irw, ioy, iox, mm,icox, icoy;
+	uint16_t imr, isx, itx, isy, irh, irw, ioy, iox, mm, icox, icoy;
 	int i;
 	int totalID;
 	int MaxRow;
@@ -186,38 +182,36 @@ private:
 	bool redraw = false;
 	uint16_t ditc = 0;
 	uint16_t temptColor = 0, bcolor, sbcolor;
-	const unsigned char	*itemBitmap[MAX_OPT];
+	const unsigned char *itemBitmap[MAX_OPT];
 	const uint16_t *item565Bitmap[MAX_OPT];
 	uint8_t bmp_w[MAX_OPT];
 	uint8_t bmp_h[MAX_OPT];
 	byte IconType[MAX_OPT];
-	uint16_t  radius = 0;
+	uint16_t radius = 0;
 	uint16_t thick = 0;
 	uint16_t incdelay = 50;
 	bool enabletouch, redrawh;
-
 };
 
+class ItemMenu
+{
 
-class  ItemMenu {
-
-	
 public:
-	ItemMenu(Adafruit_ILI9341 *Display, bool EnableTouch = false);
-	
+	ItemMenu(TFT_eSPI *Display, bool EnableTouch = false);
+
 	void init(uint16_t TextColor, uint16_t BackgroundColor,
-		uint16_t HighlightTextColor, uint16_t HighlightColor, 
-		uint16_t ItemRowHeight,uint16_t MaxRow,
-		const char *TitleText, const GFXfont &ItemFont, const GFXfont &TitleFont);
-		
+			  uint16_t HighlightTextColor, uint16_t HighlightColor,
+			  uint16_t ItemRowHeight, uint16_t MaxRow,
+			  const char *TitleText, const GFXfont &ItemFont, const GFXfont &TitleFont);
+
 	int addNI(const char *ItemLabel);
 
-	int addMono(const char *ItemLabel, const unsigned char *Bitmap, uint8_t BitmapWidth, uint8_t BitmapHeight );
+	int addMono(const char *ItemLabel, const unsigned char *Bitmap, uint8_t BitmapWidth, uint8_t BitmapHeight);
 
 	int add565(const char *ItemLabel, const uint16_t *Bitmap, uint8_t BitmapWidth, uint8_t BitmapHeight);
 
 	void draw();
-	
+
 	void MoveUp();
 
 	void MoveDown();
@@ -228,13 +222,13 @@ public:
 
 	void setTitleBarSize(uint16_t TitleTop, uint16_t TitleLeft, uint16_t TitleWith, uint16_t TitleHeight);
 
-	void setTitleText( char *TitleText,  char *ExitText);
+	void setTitleText(char *TitleText, char *ExitText);
 
 	void setTitleTextMargins(uint16_t LeftMargin, uint16_t TopMargin);
 
 	void setMenuBarMargins(uint16_t LeftMargin, uint16_t Width, byte BorderRadius, byte BorderThickness);
 
-	void setItemColors( uint16_t DisableTextColor, uint16_t BorderColor);
+	void setItemColors(uint16_t DisableTextColor, uint16_t BorderColor);
 
 	void setItemTextMargins(uint16_t LeftMargin, uint16_t TopMargin, uint16_t MenuMargin);
 
@@ -242,8 +236,8 @@ public:
 
 	void setIconMargins(uint16_t LeftMargin, uint16_t TopMargin);
 
-	void SetAllColors(uint16_t TextColor, uint16_t BackgroundColor, uint16_t HighlightTextColor, uint16_t HighlightColor, 
-		uint16_t HighLightBorderColor, uint16_t DisableTextColor, uint16_t TitleTextColor, uint16_t TitleFillColor);
+	void setAllColors(uint16_t TextColor, uint16_t BackgroundColor, uint16_t HighlightTextColor, uint16_t HighlightColor,
+					  uint16_t HighLightBorderColor, uint16_t DisableTextColor, uint16_t TitleTextColor, uint16_t TitleFillColor);
 
 	void disable(int ID);
 
@@ -260,24 +254,23 @@ public:
 	int item;
 
 private:
-
 	void drawHeader(bool hl, uint8_t style);
 
 	void drawItems();
-	
+
 	void drawMonoBitmap(int16_t x, int16_t y, const unsigned char *bitmap, uint8_t w, uint8_t h, uint16_t color);
 
-	void draw565Bitmap(int16_t x, int16_t y, const uint16_t *Bitmap , uint8_t w, uint8_t h);
+	void draw565Bitmap(int16_t x, int16_t y, const uint16_t *Bitmap, uint8_t w, uint8_t h);
 
-	Adafruit_ILI9341 *d;
+	TFT_eSPI *d;
 	bool enabletouch;
 	char itemlabel[MAX_OPT][MAX_CHAR_LEN];
 	char ttx[MAX_CHAR_LEN];
 	char etx[MAX_CHAR_LEN];
 	GFXfont itemf;
 	GFXfont titlef;
-	uint16_t bkgr, isx, itx, isy, irh, itc, ibc, ihbc, ihtc, isc, imr, irw, ioy, iox;	// item variables
-	uint16_t tbl, tbt, tbw, tbh, ttc, tfc, tox, toy, icox, icoy, di, mm;	// title variables
+	uint16_t bkgr, isx, itx, isy, irh, itc, ibc, ihbc, ihtc, isc, imr, irw, ioy, iox; // item variables
+	uint16_t tbl, tbt, tbw, tbh, ttc, tfc, tox, toy, icox, icoy, di, mm;			  // title variables
 	uint16_t ditc, difc, temptColor, bcolor;
 	bool hasIcon = false, moreup = false, moredown = false;
 	int i;
@@ -297,8 +290,6 @@ private:
 	uint8_t bmp_h[MAX_OPT];
 	byte IconType[MAX_OPT];
 	byte radius, thick;
-
 };
-
 
 #endif
